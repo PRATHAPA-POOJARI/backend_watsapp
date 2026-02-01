@@ -42,3 +42,7 @@ exports.getChats = async (req, res) => {
     res.status(500).json({ msg: "Failed to get chats" });
   }
 };
+
+
+
+
