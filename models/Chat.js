@@ -1,24 +1,31 @@
-// models/Chat.js
-const chatSchema = new mongoose.Schema({
-  participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  isGroupChat: { type: Boolean, default: false },
-  groupName: String,
-  groupAdmin: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  lastMessage: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' },
-  unreadCount: { type: Map, of: Number, default: {} }, // userID -> count
-}, { timestamps: true });
+const mongoose = require("mongoose");
 
-// models/Message.js
-const messageSchema = new mongoose.Schema({
-  chat: { type: mongoose.Schema.Types.ObjectId, ref: 'Chat', required: true },
-  sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  content: String,
-  mediaUrl: String,
-  messageType: { 
-    type: String, 
-    enum: ['text', 'image', 'video', 'audio', 'document', 'location'],
-    default: 'text'
+const chatSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      trim: true,
+    },
+    isGroup: {
+      type: Boolean,
+      default: false,
+    },
+    members: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    groupAdmin: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    lastMessage: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Message",
+    },
   },
-  readBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  deletedFor: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-}, { timestamps: true });
+  { timestamps: true }
+);
+
+module.exports = mongoose.model("Chat", chatSchema);
