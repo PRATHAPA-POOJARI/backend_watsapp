@@ -2,7 +2,7 @@
 require('dotenv').config();
 const axios = require('axios'); // npm install axios
 
-const API_URL = 'http://localhost:5000/api/auth';
+const API_URL = 'http://192.168.1.4:5000/api/auth';
 const email = 'prathappoojari607@gmail.com';
 const username = 'Rahul';
 
