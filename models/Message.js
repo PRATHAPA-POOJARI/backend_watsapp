@@ -18,9 +18,15 @@ const messageSchema = new mongoose.Schema(
             enum: ["text", "image", "file"],
             default: "text",
         },
-        mediaUrl:{
-            type: String,
-        },
+       mediaUrl: {
+    type: String,   // signed Cloudinary URL
+},
+mediaPublicId: {
+    type: String,   // to regenerate signed URL when expired
+},
+mediaName: {
+    type: String,   // original filename shown in chat
+},
         status:{
             type: String,
             enum: ["sent", "delivered", "read"],
