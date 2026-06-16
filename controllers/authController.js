@@ -1,52 +1,53 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const sendMail = require("../utils/mailer");
-exports.sendOTP = async (req, res) => {
-  try {
-    const { email, username } = req.body;
 
-    if (!email || !username) {
-      return res.status(400).json({ msg: "Email & username required" });
+  exports.sendOTP = async (req, res) => {
+    try {
+      const { email, username } = req.body;
+
+      if (!email || !username) {
+        return res.status(400).json({msg:'Email and  username is required '})
+      }
+
+      const otp = Math.floor(Math.random()*900000+100000)  
+
+      console.log(otp)
+
+      await User.findOneAndUpdate(
+        { email },
+        {
+          username,
+          otp,
+          otpExpires: Date.now() + 10 * 60 * 1000, // 10 minutes
+        },
+        { upsert: true, new: true }
+      );
+
+      // DEVELOPMENT: Return OTP in response
+      if (process.env.NODE_ENV === 'development') {
+        return res.json({ 
+          msg: "OTP generated (development mode)", 
+          otp: otp,
+          email: email,
+          expiresIn: "10 minutes"
+        });
+      }
+      
+      // PRODUCTION: Send email
+      await sendMail(email, otp);
+      res.json({ msg: "OTP sent to email" });
+      
+    } catch (err) {
+      res.status(500).json({ msg: "OTP failed" });
     }
-
-    const otp = Math.floor(100000 + Math.random() * 900000);
-
-    console.log(otp)
-
-    await User.findOneAndUpdate(
-      { email },
-      {
-        username,
-        otp,
-        otpExpires: Date.now() + 10 * 60 * 1000, // 10 minutes
-      },
-      { upsert: true, new: true }
-    );
-
-    // DEVELOPMENT: Return OTP in response
-    if (process.env.NODE_ENV === 'development') {
-      return res.json({ 
-        msg: "OTP generated (development mode)", 
-        otp: otp,
-        email: email,
-        expiresIn: "10 minutes"
-      });
-    }
-    
-    // PRODUCTION: Send email
-    await sendMail(email, otp);
-    res.json({ msg: "OTP sent to email" });
-    
-  } catch (err) {
-    res.status(500).json({ msg: "OTP failed" });
-  }
-};
+  };
 exports.verifyOTP = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ msg: "User not found" });
+    if (!user) return  res.status(400).json({msg:'user  not found'})
 
     if (Date.now() > user.otpExpires)
       return res.status(400).json({ msg: "OTP expired" });
