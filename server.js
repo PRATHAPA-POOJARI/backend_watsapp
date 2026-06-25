@@ -80,7 +80,9 @@ io.on("connection", async (socket) => {
     console.log(`❌ User disconnected: ${socket.user.username}`);
   });
 });
-
+app.get("/", (req, res) => {
+  res.send("Backend working successfully");
+});
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
